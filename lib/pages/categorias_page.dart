@@ -3,9 +3,13 @@ import 'dart:ui';
 import 'package:almacen_frontend/models/categoria.dart';
 import 'package:almacen_frontend/services/categoria_service.dart';
 
+import 'package:almacen_frontend/widgets/categoria/alerta_agregar.dart';
+import 'package:almacen_frontend/widgets/categoria/alerta_editar.dart';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:provider/provider.dart';
 import 'package:sweetalert/sweetalert.dart';
 
@@ -15,43 +19,53 @@ class CategoriasPage extends StatefulWidget {
 }
 
 class _CategoriasPageState extends State<CategoriasPage> {
-  CategoriaService _categoriaService;
-  final _ctrlCategoria = TextEditingController();
+  CategoriaService _categoriaServiceGet;
   @override
   void initState() {
     super.initState();
-    this._categoriaService =
+    this._categoriaServiceGet =
         Provider.of<CategoriaService>(context, listen: false);
-    // this._categoriaService.listCategorias = [];
-    this._categoriaService.getCategorias();
+    // this._categoriaServiceGet.listCategorias = [];
+    Future.delayed(Duration.zero).then((_) {
+      this._categoriaServiceGet.getCategorias();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final _listaCategorias =
-        Provider.of<CategoriaService>(context).listCategorias;
+    final _categoriaService = Provider.of<CategoriaService>(context);
     final mediaQuery = MediaQuery.of(context);
     Size size = mediaQuery.size;
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
           title: Text('Categorias'),
+          actions: [
+            IconButton(
+              icon: Icon(
+                Icons.add,
+                color: Colors.white,
+              ),
+              onPressed: () => alertaAgregar(context),
+            )
+          ],
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              _listaCategorias.length == 0
-                  ? Column(
-                      children: [
-                        SizedBox(
-                          height: size.height * 0.4,
-                        ),
-                        Center(child: CircularProgressIndicator())
-                      ],
-                    )
-                  : _listaCategoria(_listaCategorias)
-            ],
+        body: ModalProgressHUD(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                (_categoriaService.listCategorias.length == 0)
+                    ? Container(
+                        height: size.height * 0.95,
+                        child: Align(
+                            alignment: Alignment.center,
+                            child: Text('No existen Categorias.')),
+                      )
+                    : _listaCategoria(_categoriaService.listCategorias)
+              ],
+            ),
           ),
+          inAsyncCall: _categoriaService.cargandoCategorias,
         ));
   }
 
@@ -79,11 +93,12 @@ class _CategoriasPageState extends State<CategoriasPage> {
               subtitle: Text('fecha Creado :$fechaFormateada'),
               title: Text(categoria.nombre))),
       secondaryActions: <Widget>[
-        IconSlideAction(
-            caption: 'Editar',
-            color: Colors.black45,
-            icon: Icons.edit,
-            onTap: () => _alertaEditar(categoria, context)),
+        if (categoria.estado == 1)
+          IconSlideAction(
+              caption: 'Editar',
+              color: Colors.black45,
+              icon: Icons.edit,
+              onTap: () => alertaEditar(context, categoria)),
         IconSlideAction(
             caption: (categoria.estado == 0) ? 'Activar' : 'Desactivar',
             color: (categoria.estado == 0) ? Colors.blue : Colors.red,
@@ -93,13 +108,6 @@ class _CategoriasPageState extends State<CategoriasPage> {
             onTap: () => _cambiarEstado(categoria.id))
       ],
     );
-  }
-
-  void _cambiarEstado(id) async {
-    final resp = await this._categoriaService.cambiarEstado(id);
-    if (!resp) {
-      SweetAlert.show(context, subtitle: "Error al cambiar el estado.");
-    }
   }
 
   Widget _mostrarEstado(estado) {
@@ -121,53 +129,10 @@ class _CategoriasPageState extends State<CategoriasPage> {
     );
   }
 
-  _alertaEditar(Categoria categoria, BuildContext context) {
-    _ctrlCategoria.text = categoria.nombre;
-    bool _habilitar = true;
-    showDialog(
-        context: context,
-        builder: (context) {
-          return StatefulBuilder(
-            builder: (BuildContext context, setState) {
-              return AlertDialog(
-                title: Text('Editar'),
-                content: TextField(
-                  onChanged: (v) {
-                    setState(() {
-                      if (v.isNotEmpty) {
-                        _habilitar = true;
-                      } else {
-                        _habilitar = false;
-                      }
-                    });
-                  },
-                  controller: _ctrlCategoria,
-                  decoration: InputDecoration(
-                    labelText: 'Categoria',
-                    border: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                  ),
-                ),
-                actions: [
-                  FlatButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text('Cancelar'),
-                  ),
-                  FlatButton(
-                    onPressed: (_habilitar)
-                        ? () =>
-                            _editarCategoria(categoria.id, _ctrlCategoria.text)
-                        : null,
-                    child: Text("Actualizar"),
-                  )
-                ],
-              );
-            },
-          );
-        });
-  }
-
-  void _editarCategoria(id, nombre) {
-    print(nombre);
+  void _cambiarEstado(id) async {
+    final resp = await this._categoriaServiceGet.cambiarEstado(id);
+    if (!resp) {
+      SweetAlert.show(context, subtitle: "Error al cambiar el estado.");
+    }
   }
 }
