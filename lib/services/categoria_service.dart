@@ -35,18 +35,20 @@ class CategoriaService with ChangeNotifier {
         cargandoCategorias = false;
       } else {
         listCategorias = [];
+        cargandoCategorias = false;
       }
     } catch (e) {
       listCategorias = [];
+      cargandoCategorias = false;
     }
   }
 
-  Future<bool> cambiarEstado(String idCategoria) async {
+  Future<bool> cambiarEstado(int idCategoria) async {
     try {
       final token = await AuthService.getToken();
 
       final resp = await http.put(
-          '${Env.apiUrl}categoriaproducto/cambiarEstado?id=$idCategoria',
+          '${Env.apiUrl}categoriaproducto/cambiarEstado/$idCategoria',
           headers: {'Content-Type': 'application/json', 'x-token': token});
       final respuesta = jsonDecode(resp.body);
       final bool ok = respuesta['ok'];
@@ -57,12 +59,11 @@ class CategoriaService with ChangeNotifier {
     }
   }
 
-  Future<dynamic> actualizarCategoria(
-      String idCategoria, String categoria) async {
+  Future<dynamic> actualizarCategoria(int idCategoria, String categoria) async {
     try {
       final token = await AuthService.getToken();
       final resp = await http.put(
-          '${Env.apiUrl}categoriaproducto/actualizar?id=$idCategoria',
+          '${Env.apiUrl}categoriaproducto/actualizar/$idCategoria',
           headers: {'Content-Type': 'application/json', 'x-token': token},
           body: jsonEncode({'nombre': categoria}));
 

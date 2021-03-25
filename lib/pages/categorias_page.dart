@@ -81,7 +81,7 @@ class _CategoriasPageState extends State<CategoriasPage> {
 
   Widget _categoriaTitle(Categoria categoria) {
     String fechaFormateada =
-        DateFormat('dd-MM-yyyy – HH:mm:ss').format(categoria.fechaCreado);
+        DateFormat('dd-MM-yyyy – HH:mm:ss').format(categoria.createdAt);
 
     return Slidable(
       actionPane: SlidableDrawerActionPane(),

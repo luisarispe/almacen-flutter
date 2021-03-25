@@ -12,34 +12,34 @@ class Categoria {
   Categoria({
     this.estado,
     this.nombre,
-    this.usuario,
-    this.fechaCreado,
-    this.fechaActualizado,
+    this.idUsuario,
+    this.createdAt,
+    this.updatedAt,
     this.id,
   });
 
   int estado;
   String nombre;
-  String usuario;
-  DateTime fechaCreado;
-  DateTime fechaActualizado;
-  String id;
+  int idUsuario;
+  DateTime createdAt;
+  DateTime updatedAt;
+  int id;
 
   factory Categoria.fromJson(Map<String, dynamic> json) => Categoria(
         estado: json["estado"],
         nombre: json["nombre"],
-        usuario: json["usuario"],
-        fechaCreado: DateTime.parse(json["fecha_creado"]),
-        fechaActualizado: DateTime.parse(json["fecha_actualizado"]),
+        idUsuario: json["id_usuario"],
+        createdAt: DateTime.parse(json["createdAt"]),
+        updatedAt: DateTime.parse(json["updatedAt"]),
         id: json["id"],
       );
 
   Map<String, dynamic> toJson() => {
         "estado": estado,
         "nombre": nombre,
-        "usuario": usuario,
-        "fecha_creado": fechaCreado.toIso8601String(),
-        "fecha_actualizado": fechaActualizado.toIso8601String(),
+        "id_usuario": idUsuario,
+        "createdAt": createdAt.toIso8601String(),
+        "updatedAt": updatedAt.toIso8601String(),
         "id": id,
       };
 }

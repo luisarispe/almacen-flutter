@@ -13,21 +13,21 @@ class Usuario {
     this.estado,
     this.nombre,
     this.correo,
-    this.fechaCreado,
+    this.createdAt,
     this.id,
   });
 
   int estado;
   String nombre;
   String correo;
-  DateTime fechaCreado;
-  String id;
+  DateTime createdAt;
+  int id;
 
   factory Usuario.fromJson(Map<String, dynamic> json) => Usuario(
         estado: json["estado"],
         nombre: json["nombre"],
         correo: json["correo"],
-        fechaCreado: DateTime.parse(json["fecha_creado"]),
+        createdAt: DateTime.parse(json["createdAt"]),
         id: json["id"],
       );
 
@@ -35,7 +35,7 @@ class Usuario {
         "estado": estado,
         "nombre": nombre,
         "correo": correo,
-        "fecha_creado": fechaCreado.toIso8601String(),
+        "fecha_creado": createdAt.toIso8601String(),
         "id": id,
       };
 }

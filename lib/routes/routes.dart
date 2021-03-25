@@ -1,7 +1,9 @@
+import 'package:almacen_frontend/pages/agregar_producto_page.dart';
 import 'package:almacen_frontend/pages/categorias_page.dart';
 import 'package:almacen_frontend/pages/dashboard_page.dart';
 import 'package:almacen_frontend/pages/loading_page.dart';
 import 'package:almacen_frontend/pages/login_page.dart';
+import 'package:almacen_frontend/pages/productos_page.dart';
 import 'package:almacen_frontend/pages/registro_page.dart';
 import 'package:flutter/material.dart';
 
@@ -10,5 +12,7 @@ final Map<String, Widget Function(BuildContext)> appRoutes = {
   'registro': (_) => RegistroPage(),
   'dashboard': (_) => DashboardPage(),
   'loading': (_) => LoadingPage(),
-  'categorias': (_) => CategoriasPage()
+  'categorias': (_) => CategoriasPage(),
+  'productos': (_) => ProductoPage(),
+  'agregarProducto': (_) => AgregarProducto()
 };
